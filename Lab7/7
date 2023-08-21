@@ -1,0 +1,93 @@
+-- RAISE
+-- Mesaj Türleri: DEBUG, LOG, INFO, NOTICE, WARNING, EXCEPTION
+-- RAISE NOTICE 'Salary here is %', sal_variable;
+
+
+-- RECORD
+-- ‘123456789’ ssn’i olan çalışanın ismini, çalıştığı departmanın ismini ve maaşını bulunuz.
+-- TANIMLAMA
+	CREATE TYPE yeni_tur AS (isim VARCHAR(15), dep_isim VARCHAR(25), maas INTEGER);
+-- USAGE
+	CREATE or REPLACE FUNCTION ornek2 (eno employee.ssn%type)	RETURNS yeni_tur AS $$
+	DECLARE
+		bilgi yeni_tur;
+	BEGIN
+		SELECT fname, dname, salary INTO bilgi
+		FROM employee e, department d
+		WHERE e.dno = d.dnumber AND e.ssn = eno;
+
+		RAISE NOTICE 'Calisan ismi: %, departmanin ismi: %, maasi: % TLdir. ', bilgi.isim, bilgi.dep_isim, bilgi.maas ;
+		RETURN bilgi;
+	END;
+	$$ LANGUAGE 'plpgsql';
+
+	SELECT ORNEK2('123456789');
+	DROP FUNCTION ORNEK2(employee.ssn%type);
+
+
+-- CURSOR
+-- Numarası verilen bir departmandaki çalışanların isimlerini bulan bir fonksiyon yazınız. Bir departman numarası vererek fonksiyonu çağırınız.
+	CREATE OR REPLACE FUNCTION ORNEK3(NUM DEPARTMENT.DNUMBER%TYPE) RETURNS VOID AS $$
+	DECLARE
+		YENI_CUR CURSOR FOR
+			SELECT FNAME, LNAME
+			FROM EMPLOYEE, DEPARTMENT
+			WHERE DNUMBER=DNO;
+	BEGIN
+		FOR SATIR IN YENI_CUR LOOP
+			RAISE NOTICE 'NAME : % %', SATIR.FNAME, SATIR.LNAME;
+		END LOOP;
+	END;
+	$$ LANGUAGE PLPGSQL;
+
+	SELECT ORNEK3(5);
+	DROP FUNCTION ORNEK3(DEPARTMENT.DNUMBER%TYPE);
+
+
+
+-- Departman numarası verilen bir departmandaki çalışanların toplam maaşını (SUM() fonksiyonundan yararlanmadan) bulan bir fonksiyon yazınız.
+CREATE OR REPLACE FUNCTION ORNEK4() RETURNS INT AS $$
+DECLARE
+	CURR CURSOR FOR 
+	SELECT SALARY
+	FROM EMPLOYEE;
+	TOPLAM INT;
+BEGIN
+	TOPLAM=0;
+	FOR SATIR IN CURR LOOP
+		TOPLAM=TOPLAM+SATIR.SALARY;
+	END LOOP;
+	RETURN TOPLAM;
+END;
+$$ LANGUAGE PLPGSQL;
+
+SELECT ORNEK4();
+
+-- TRIGGER
+--Maaş inişine ve %10’dan fazla maaş artışına izin vermeyen trigger’ı yazınız.
+CREATE TRIGGER TNAME
+BEFORE UPDATE
+ON EMPLOYEE
+FOR EACH ROW EXECUTE PROCEDURE TFUNC();
+
+CREATE OR REPLACE FUNCTION TFUNC() RETURNS TRIGGER AS $$
+DECLARE
+BEGIN
+	IF (OLD.salary > new.salary OR new.salary>1.1*old.salary) THEN
+		RAISE EXCEPTION 'Maasi dusuremezsiniz ve %%10dan fazla zam yapamazsınız.';
+		RETURN old;
+	ELSE
+		RETURN new;
+	END IF;
+
+END;
+$$ LANGUAGE PLPGSQL;
+
+UPDATE employee SET salary = salary*1.12;
+
+
+
+
+
+
+

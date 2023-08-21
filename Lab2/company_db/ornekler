@@ -1,0 +1,42 @@
+-- örnek-1: 5 numaralı departmanda çalışan işçilerin ad,soyad bilgilerini listeleyen sorguyu yazınız. 
+
+SELECT FNAME, LNAME FROM EMPLOYEE WHERE DNO=5;
+
+-- örnek-2: “Sales” departmanının hangi şehirlerde ofisi olduğunu bulan sorguyu yazınız.
+
+SELECT DLOCATION FROM DEPT_LOCATIONS WHERE DNUMBER=(SELECT DNUMBER FROM DEPARTMENT WHERE DNAME='Sales');
+
+select dlocation
+from department AS d, dept_locations AS dl
+where d.dnumber = dl.dnumber and dname='Sales';
+
+-- örnek-3: “Atlanta” şehrinde yaşayan çalışanların ad,soyad ve çalıştığı departmanın ismini bulan sorguyu yazınız.
+
+SELECT FNAME, MINIT, LNAME, DNAME FROM EMPLOYEE JOIN DEPARTMENT ON DNO=DNUMBER WHERE ADDRESS LIKE '%Atlanta%';
+
+select fname, lname, dname
+from employee, department
+where dno = dnumber and address like '%Atlanta%'
+-- örnek-4: “OperatingSystems” projesinde çalışanların ad,soyad bilgilerini listeleyen sorguyu yazınız.
+
+select fname,lname
+from project, works_on, employee
+where pnumber=pno and essn=ssn and pname='OperatingSystems'
+
+-- örnek-5: Kızının ismi ‘Alice’ olan çalışanların, çalıştıkları departmanların isimlerini bulan sorguyu yazınız.
+
+SELECT DISTINCT DNAME FROM DEPARTMENT JOIN (EMPLOYEE JOIN DEPENDENT ON SSN=ESSN) ON DNO=DNUMBER WHERE DEPENDENT_NAME='Alice';
+
+select distinct dname
+from dependent, employee, department
+where dependent_name='Alice' and relationship='Daughter' and essn=ssn and dno=dnumber;
+-- örnek-6: Maaşı 70.000’in üzerinde olan çalışanların çalıştıkları projelerin isimlerini listeleyin.
+
+select pname
+from employee, works_on, project
+where ssn=essn and pno=pnumber and salary>70000
+--örnek-7: ‘Elizabeth’ isminde akrabası olan çalışanın yöneticisinin (supervisor) adını ve soyadını bulan SQL sorgusunu yazınız.
+
+SELECT E2.FNAME, E2.LNAME	FROM EMPLOYEE AS E1, EMPLOYEE AS E2, DEPENDENT AS D WHERE DEPENDENT_NAME='Elizabeth' AND D.ESSN=E1.SSN AND E2.SSN=E1.SUPERSSN; 
+
+

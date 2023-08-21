@@ -1,0 +1,30 @@
+-- max salary Atlantada  OperatingSystems projesinde çalışan VE DGSI 1967 DEN BUYUK OLANLAR
+SELECT DISTINCT FNAME, DNO, BDATE
+SELECT MAX(SALARY)
+FROM EMPLOYEE E, PROJECT P, WORKS_ON W
+WHERE E.SEX='M'
+	AND E.ADDRESS LIKE '%Atlanta%' 
+	AND PNAME='OperatingSystems' AND PNO=PNUMBER 
+	AND W.ESSN=E.SSN
+	AND E.BDATE > '1967-01-01' 	 
+
+--erkek çalışan, departmanı Houston veya Stafford da çalışan Reorganization projesinde çalışmayan, patronu kadın olmayan (in) çalışanın ismi  soy ismi ve maaşı 
+select DISTINCT E1.fname, E1.lname, E1.salary
+from employee as e1, dept_locationS as d, project as pr, works_on as w
+where e1.sex = 'M' and e1.dno = d.dnumber and (d.dlocation = 'Houston' or d.dlocation = 'Stafford') and e1.ssn = w.essn and w.pno = pr.pnumber and pr.pname != 'Reorganization' 
+       and e1.superssn IN (SELECT E2.SSN FROM employee as e2 WHERE e2.sex != 'F')
+
+--maaşı 30000 - 35000 arasında olmayan, miniti k olmayan, ERKEK akrabası olan, HARDWARE departmanında çalışan, InkjetPrinters projesinde çalışmayan kişi sayısı
+SELECT DISTINCT E1.FNAME, E1.SALARY, E1.MINIT, E1.DNO
+FROM EMPLOYEE E1, DEPENDENT D, DEPARTMENT DM
+WHERE NOT EXISTS (SELECT NULL FROM EMPLOYEE E2 WHERE E1.SSN=E2.SSN AND E2.SALARY BETWEEN 30000 AND 35000)
+	AND NOT EXISTS (SELECT NULL FROM EMPLOYEE E2 WHERE E1.SSN=E2.SSN AND E2.MINIT='K')
+	AND D.ESSN=E1.SSN AND D.SEX='M'
+	AND DM.DNAME='Hardware' AND DM.DNUMBER=E1.DNO
+
+EXCEPT
+
+SELECT DISTINCT E1.FNAME, E1.SALARY, E1.MINIT, E1.DNO
+FROM EMPLOYEE E1, PROJECT PR, WORKS_ON W
+WHERE PR.PNAME='InkjetPrinters' AND PR.PNUMBER=W.PNO AND W.ESSN=E1.SSN
+

@@ -1,0 +1,22 @@
+CREATE TABLE student(
+	student_id int primary key,
+	student_name varchar(100)
+)
+
+alter table student add student_adress varchar(300);
+
+
+insert into student VALUES(20011023, 'Alperen Olcer', 'Balikesir');
+insert into student VALUES(20011024, 'Alperen Olcmez', 'Kars');
+insert into student VALUES(20011025, 'Alperen Olcebilir', 'Ankara');
+
+SELECT * FROM STUDENT;
+SELECT * FROM STUDENT WHERE student_name LIKE '%mez%';
+SELECT * FROM STUDENT WHERE student_name LIKE '%Alperen%';
+SELECT * FROM STUDENT WHERE student_name LIKE '%ALPEREN%';
+SELECT * FROM STUDENT WHERE student_id BETWEEN 20011023 AND 20011024;
+
+UPDATE student SET student_adress='Istanbul' where student_adress='Ankara';
+ALTER TABLE student RENAME student_adress TO studentAdress;
+
+DELETE FROM student WHERE student_id=20011023;

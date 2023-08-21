@@ -1,0 +1,59 @@
+-- En genç çalışanın çalıştığı projelerin numaralarını listeleyiniz.
+SELECT W.PNO
+FROM WORKS_ON W, EMPLOYEE E1
+WHERE W.ESSN=E1.SSN AND E1.BDATE IN (SELECT MAX(E2.BDATE) FROM EMPLOYEE E2)
+
+-- «Middleware» projesinde kaç kişinin çalıştığını ve bu çalışanların ortalama maaşlarını bulunuz.
+SELECT COUNT(E.SSN) AS CALISAN_KISI_SAYISI, AVG(E.SALARY) AS ORTALAMA_MAAS
+FROM PROJECT PR, EMPLOYEE E, WORKS_ON W
+WHERE PR.PNAME='Middleware' AND PR.PNUMBER=W.PNO AND W.ESSN=E.SSN
+
+
+--Project tablosunu dnum kolonuna göre gruplandırmak, ve herbir departmanda kaç tane proje olduğunu yazdırmak istersek:
+SELECT COUNT(*), DNUM
+FROM PROJECT PR
+GROUP BY(PR.DNUM)
+ORDER BY(COUNT(*)) DESC, DNUM--DEFAULT ASC / ONCE COUNT SAYILARINA GORE EGER AYNILIK VARSA DNUMA GORE SIRALAMA
+
+
+--Her bir projede çalışanların ortalama maaşını bulup proje ismine göre alfabetik olarak sıralayınız.
+SELECT PR.PNAME, AVG(E.SALARY)
+FROM PROJECT PR, EMPLOYEE E, WORKS_ON W
+WHERE PR.PNUMBER=W.PNO AND W.ESSN=E.SSN
+GROUP BY(PR.PNAME)
+ORDER BY(PR.PNAME)
+
+
+--Her bir departmanda her bir cinsiyetten kaçar işçi olduğunu ve bu işçilerin ortalama maaşlarını bulunuz.
+SELECT D.DNAME, E1.SEX, COUNT(*), AVG(E1.SALARY)
+FROM DEPARTMENT D, EMPLOYEE E1
+WHERE E1.DNO=D.DNUMBER
+GROUP BY D.DNAME, E1.SEX
+ORDER BY D.DNAME
+
+SELECT E1.DNO, E1.SEX, COUNT(*), AVG(E1.SALARY)
+FROM EMPLOYEE E1
+GROUP BY E1.DNO, E1.SEX
+ORDER BY E1.DNO
+
+
+--Ortalama maaşın 40000’den fazla olduğu departmanların numaralarını listeleyin. (1 NOLU DEPARTMAN HARIC)
+SELECT DNO
+FROM EMPLOYEE
+GROUP BY DNO
+HAVING AVG(SALARY)>40000 AND DNO<>1
+LIMIT 1 OFFSET 1	--1. ELEMANDAN SONRA 1 ELEMAN GOSTER
+
+--Yöneticisi olmayan kişileri bulunuz
+SELECT ssn, superssn
+FROM employee
+WHERE superssn IS NULL
+--SIRALAMA
+--SELECT
+--FROM
+--WHERE
+--GROUP BY
+--HAVING
+--ORDER BY
+--LIMIT
+
